@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}Notas{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <h1>Notas</h1>
+    <div class="subtitle">Registrá interacciones o recordatorios vinculados a un cliente. </div>
+  </div>
+  <div class="actions-row">
+    <a class="btn btn-outline" href="{{ url_for('clientes') }}">Volver a Clientes</a>
+  </div>
+</div>
+
+<div class="card-lg" style="margin-bottom:1rem">
+  <form method="post" class="form-grid">
+    <div class="field">
+      <label>Cliente</label>
+      <select name="cliente_id" required>
+        <option value="">— Seleccionar… —</option>
+        {% for c in clientes %}
+          <option value="{{ c.id }}">{{ c.apellido }}, {{ c.nombre }} — {{ c.email }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="field" style="grid-column:1 / -1">
+      <label>Contenido</label>
+      <textarea name="contenido" rows="4" required placeholder=></textarea>
+    </div>
+    <div style="grid-column:1 / -1">
+      <button class="btn btn-dark" type="submit">Agregar nota</button>
+    </div>
+  </form>
+</div>
+
+{% if notas %}
+  <ul class="timeline">
+    {% for n in notas %}
+      <li class="fade-in">
+        <div class="note-row">
+          <div style="min-width: 10ch" class="note-meta">
+            <span>{{ n.created_at }}</span>
+          </div>
+          <div style="flex:1">
+            <div class="note-meta">
+              <span class="badge-soft">{{ n.apellido }}, {{ n.nombre }}</span>
+              <span>{{ n.email }}</span>
+            </div>
+            <div class="note-content" style="margin-top:.4rem">{{ n.contenido }}</div>
+          </div>
+          <div class="note-actions">
+            <form action="{{ url_for('notas_eliminar', nota_id=n.id) }}" method="post"
+                  onsubmit="return confirm('¿Eliminar nota definitivamente?')">
+              <button class="btn btn-red" type="submit">Eliminar</button>
+            </form>
+          </div>
+        </div>
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <div class="card" style="padding:1.2rem; text-align:center; color:var(--muted)">
+    No hay notas aún. Agregá la primera con el formulario de arriba.
+  </div>
+{% endif %}
+
+{% endblock %}

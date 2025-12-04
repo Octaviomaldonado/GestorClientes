@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+{% block title %}Turnos{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <h1>Turnos</h1>
+    <div class="subtitle">Agendá turnos con fecha, hora y motivo. Opcionalmente vincular a un cliente.</div>
+  </div>
+  <div class="actions-row">
+    <a class="btn btn-outline" href="{{ url_for('clientes') }}">Ver clientes</a>
+  </div>
+</div>
+
+<div class="card-lg" style="margin-bottom:1rem">
+  <form method="post" class="form-grid">
+    <div class="field">
+      <label>Cliente (opcional)</label>
+      <select name="cliente_id">
+        <option value="">— Sin cliente —</option>
+        {% for c in clientes %}
+          {% set sel = (edit_row and edit_row.cliente_id==c.id) %}
+          <option value="{{ c.id }}" {% if sel %}selected{% endif %}>{{ c.apellido }}, {{ c.nombre }} — {{ c.email }}</option>
+        {% endfor %}
+      </select>
+      
+    </div>
+
+    <div class="field">
+      <label>Fecha</label>
+      <input type="date" name="fecha" value="{{ fecha_pref or '' }}" required>
+    </div>
+
+    <div class="field">
+      <label>Hora</label>
+      <input type="time" name="hora" value="{{ hora_pref or '' }}" required>
+    </div>
+
+    <div class="field" style="grid-column:1 / -1">
+      <label>Motivo</label>
+      <input name="motivo" value="{{ edit_row.motivo if edit_row else '' }}" placeholder="Ej.: Reunión, Seguimiento, Presupuesto..." required>
+    </div>
+
+    <div style="grid-column:1 / -1">
+      <button class="btn btn-emerald" type="submit">{{ 'Guardar cambios' if edit_row else 'Agregar turno' }}</button>
+      {% if edit_row %}
+        <a class="btn" href="{{ url_for('turnos') }}" style="margin-left:.5rem">Cancelar edición</a>
+      {% endif %}
+    </div>
+  </form>
+</div>
+
+<div class="kpis" style="margin-bottom:1rem">
+  <div class="kpi"><div class="lbl">Próximos</div><div class="n">{{ proximos|length }}</div></div>
+  <div class="kpi"><div class="lbl">Historial (últimos)</div><div class="n">{{ pasados|length }}</div></div>
+  <div class="kpi"><div class="lbl">Total</div><div class="n">{{ proximos|length + pasados|length }}</div></div>
+  <div class="kpi"><div class="lbl">Vinculados a cliente</div><div class="n">{{ (proximos + pasados)|selectattr('cliente_id')|list|length }}</div></div>
+</div>
+
+<div class="card" style="padding:1rem; margin-bottom:1rem">
+  <h3 style="margin:.2rem 0 1rem 0">Próximos turnos</h3>
+  <table class="table">
+    <thead>
+      <tr><th>Fecha y hora</th><th>Cliente</th><th>Motivo</th><th>Acciones</th></tr>
+    </thead>
+    <tbody>
+      {% for t in proximos %}
+      <tr class="fade-in">
+        <td>{{ t.inicio }}</td>
+        <td>
+          {% if t.cliente_id %}
+            {{ t.apellido }}, {{ t.nombre }} <span class="muted">({{ t.email }})</span>
+          {% else %}
+            <span class="muted">—</span>
+          {% endif %}
+        </td>
+        <td>{{ t.motivo }}</td>
+        <td class="actions-row">
+          <a class="btn btn-indigo" href="{{ url_for('turnos_editar', turno_id=t.id) }}">Editar</a>
+          <form method="post" action="{{ url_for('turnos_eliminar', turno_id=t.id) }}"
+                onsubmit="return confirm('¿Eliminar turno definitivamente?')">
+            <button class="btn btn-red" type="submit">Eliminar</button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="4" class="muted" style="text-align:center;padding:1rem">No hay turnos próximos</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="card" style="padding:1rem">
+  <h3 style="margin:.2rem 0 1rem 0">Historial (últimos)</h3>
+  <table class="table">
+    <thead>
+      <tr><th>Fecha y hora</th><th>Cliente</th><th>Motivo</th><th>Acciones</th></tr>
+    </thead>
+    <tbody>
+      {% for t in pasados %}
+      <tr class="fade-in">
+        <td>{{ t.inicio }}</td>
+        <td>
+          {% if t.cliente_id %}
+            {{ t.apellido }}, {{ t.nombre }} <span class="muted">({{ t.email }})</span>
+          {% else %}
+            <span class="muted">—</span>
+          {% endif %}
+        </td>
+        <td>{{ t.motivo }}</td>
+        <td class="actions-row">
+          <a class="btn btn-indigo" href="{{ url_for('turnos_editar', turno_id=t.id) }}">Editar</a>
+          <form method="post" action="{{ url_for('turnos_eliminar', turno_id=t.id) }}"
+                onsubmit="return confirm('¿Eliminar turno definitivamente?')">
+            <button class="btn btn-red" type="submit">Eliminar</button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="4" class="muted" style="text-align:center;padding:1rem">No hay historial</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

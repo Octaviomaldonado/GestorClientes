@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %}Exportar{% endblock %}
+{% block content %}
+  <div class="card-lg" style="margin-bottom:1rem">
+    <h2 style="margin:.25rem 0 1rem 0">Exportar datos</h2>
+    <p class="muted" style="margin:0 0 1rem 0">Elegí qué querés exportar a Excel.</p>
+    <div class="actions" style="grid-template-columns: repeat(2,1fr)">
+      <a class="action" href="{{ url_for('exportar_clientes') }}">
+        <h4>Clientes</h4>
+        <div class="pill">XLSX</div>
+        <p class="muted" style="margin:.5rem 0 0 0">Lista completa de clientes.</p>
+      </a>
+      <a class="action" href="{{ url_for('exportar_turnos') }}">
+        <h4>Turnos</h4>
+        <div class="pill">XLSX</div>
+        <p class="muted" style="margin:.5rem 0 0 0">Agenda con datos del cliente.</p>
+      </a>
+    </div>
+  </div>
+{% endblock %}

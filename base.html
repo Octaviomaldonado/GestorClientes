@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{% block title %}Gestor de Clientes{% endblock %}</title>
+    <style>
+      :root { --bg:#f8fafc; --fg:#0f172a; --muted:#64748b; --card:#ffffff; --border:#e2e8f0; }
+      body { background: var(--bg); color: var(--fg); font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin:0; }
+      .container { max-width: 72rem; margin-inline: auto; padding: 1rem; }
+      .nav { background:#fff; border-bottom:1px solid var(--border); position: sticky; top:0; z-index:10; }
+      .btn { padding:.45rem .8rem; border-radius:.5rem; font-size:.9rem; text-decoration:none; display:inline-block }
+      .btn-dark { background:#0f172a; color:#fff }
+      .btn-indigo { background:#4f46e5; color:#fff }
+      .btn-emerald { background:#059669; color:#fff }
+      .btn-amber { background:#b45309; color:#fff }
+      .btn-red { background:#b91c1c; color:#fff }
+      .btn-ghost { background:#eef2ff; color:#1e1b4b }
+      .space-x-2>*+*{ margin-left:.5rem }
+      .card { background:#fff; border:1px solid var(--border); border-radius:.8rem; box-shadow:0 1px 2px rgba(0,0,0,.04) }
+      .table { width:100%; border-collapse:collapse; background:#fff; }
+      .table th, .table td { padding:.6rem .8rem; border-top:1px solid var(--border); text-align:left }
+      .table thead { background:#f1f5f9; color:#334155 }
+      .badge { font-size:.75rem; padding:.1rem .4rem; border-radius:.4rem }
+      .ok { background:#d1fae5; color:#065f46 }
+      .muted { color:var(--muted) }
+      input, select, textarea { width:100%; padding:.55rem .7rem; border:1px solid var(--border); border-radius:.6rem }
+      .row { display:grid; gap:1rem; grid-template-columns:1fr }
+      @media (min-width:640px){ .row { grid-template-columns:repeat(2, 1fr)} }
+      .mt-2{ margin-top:.5rem } .mt-4{ margin-top:1rem } .mb-4{ margin-bottom:1rem }
+      .flex{ display:flex } .items-center{ align-items:center } .justify-between{ justify-content:space-between }
+
+      /* --- Landing “moderna” --- */
+      .hero {
+        position: relative;
+        background: linear-gradient(135deg,#eef2ff,#f0fdfa);
+        border: 1px solid var(--border);
+        border-radius: 1rem;
+        padding: 1.75rem;
+        overflow: hidden;
+      }
+      .hero::after{
+        content:"";
+        position:absolute; right:-60px; top:-60px;
+        width:220px; height:220px;
+        background: radial-gradient(transparent 40%, rgba(79,70,229,.12));
+        filter: blur(2px);
+        transform: rotate(25deg);
+      }
+      .h1 {
+        font-size: clamp(1.3rem, 1.2rem + 1.2vw, 2rem);
+        margin: 0 0 .35rem 0;
+        letter-spacing: .3px;
+      }
+      .subtle { color: var(--muted) }
+      .grid {
+        display:grid; gap:1rem;
+        grid-template-columns: 1fr;
+      }
+      @media (min-width:768px){ .grid{ grid-template-columns: repeat(12,1fr);} }
+      .card-lg{
+        grid-column: 1 / -1;
+        background:#fff; border:1px solid var(--border);
+        border-radius: 1rem; padding:1rem;
+        box-shadow: 0 10px 25px rgba(15,23,42,.06);
+      }
+      .kpis{ display:grid; gap:.75rem; grid-template-columns:repeat(2,1fr)}
+      @media (min-width:768px){ .kpis{ grid-template-columns:repeat(4,1fr)} }
+      .kpi{
+        background:#fff; border:1px solid var(--border); border-radius:.9rem; padding:1rem;
+        transition: transform .15s ease, box-shadow .2s ease;
+      }
+      .kpi:hover{ transform: translateY(-2px); box-shadow:0 8px 16px rgba(15,23,42,.08) }
+      .kpi .n{ font-weight:700; font-size:1.6rem; line-height:1 }
+      .kpi .lbl{ font-size:.9rem; color:var(--muted) }
+      .badge-chip{
+        display:inline-flex; align-items:center; gap:.4rem;
+        background:#eef2ff; color:#3730a3; border-radius:999px; padding:.35rem .6rem; font-size:.8rem;
+      }
+      .actions{ display:grid; gap:.75rem; grid-template-columns: repeat(2,1fr) }
+      @media (min-width:768px){ .actions{ grid-template-columns: repeat(4,1fr)} }
+      .action{
+        border:1px solid var(--border); border-radius:.9rem; padding:1rem; background:#fff;
+        text-decoration:none; color:inherit; transition:all .15s ease;
+      }
+      .action:hover{ transform: translateY(-2px); box-shadow:0 8px 16px rgba(15,23,42,.08) }
+      .action h4{ margin:.25rem 0 .35rem 0; font-size:1rem }
+      .pill{ display:inline-block; padding:.15rem .5rem; border-radius:999px; font-size:.75rem; border:1px dashed var(--border); color:var(--muted)}
+      .list{ list-style:none; margin:0; padding:0 }
+      .list li{ padding:.6rem .2rem; border-top:1px solid var(--border) }
+      .fade-in{ animation: fade .35s ease both }
+      @keyframes fade{ from{opacity:0; transform:translateY(4px)} to{opacity:1; transform:none} }
+
+      /* ==== UI helpers modernos ==== */
+      .page-header { display:flex; align-items:flex-start; justify-content:space-between; gap:1rem; margin: .25rem 0 1rem 0; }
+      .page-header h1 { margin:0; font-size: clamp(1.25rem, 1rem + 1vw, 1.6rem); letter-spacing:.2px; }
+      .subtitle { color:var(--muted); font-size:.95rem; margin-top:.15rem }
+      .actions-row { display:flex; gap:.5rem; flex-wrap:wrap }
+
+      .card-lg { background:#fff; border:1px solid var(--border); border-radius:1rem; padding:1rem; box-shadow:0 10px 24px rgba(15,23,42,.06) }
+
+      .form-grid { display:grid; grid-template-columns:1fr; gap:1rem }
+      @media (min-width: 768px){ .form-grid { grid-template-columns: 1fr 1fr } }
+      .field { display:flex; flex-direction:column; gap:.35rem }
+      .field label { color:var(--muted); font-size:.9rem }
+
+      .helper { color:var(--muted); font-size:.85rem }
+
+      .alert { border-radius:.75rem; padding:.75rem .9rem; border:1px solid var(--border); }
+      .alert-error { background:#fee2e2; color:#7f1d1d; border-color:#fecaca }
+      .alert-ok { background:#ecfdf5; color:#065f46; border-color:#a7f3d0 }
+
+      .btn-outline { background:#fff; color:#0f172a; border:1px solid var(--border) }
+
+      .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+             background:#f1f5f9; border:1px solid var(--border); padding:.05rem .35rem; border-radius:.35rem; font-size:.85em }
+
+      .pill { display:inline-flex; align-items:center; gap:.4rem; border-radius:999px; padding:.25rem .6rem; font-size:.8rem; border:1px dashed var(--border); color:var(--muted) }
+
+      .timeline { list-style:none; margin:0; padding:0 }
+      .timeline li { position:relative; padding:1rem; border:1px solid var(--border); border-radius:.9rem; background:#fff; }
+      .timeline li + li { margin-top:.75rem }
+      .note-meta { display:flex; gap:.5rem; flex-wrap:wrap; color:var(--muted); font-size:.85rem }
+      .note-actions { margin-left:auto }
+      .note-row { display:flex; align-items:flex-start; gap:1rem; }
+      .note-content { white-space:pre-wrap }
+      .badge-soft { background:#eef2ff; color:#3730a3; border-radius:999px; padding:.15rem .5rem; font-size:.75rem }
+    </style>
+  </head>
+  <body>
+    <nav class="nav">
+      <div class="container flex items-center justify-between" style="padding:.75rem 1rem">
+        <a href="{{ url_for('landing') }}" style="font-weight:600;color:#0f172a;text-decoration:none">Gestor</a>
+        <div class="space-x-2">
+          <a href="{{ url_for('landing') }}" class="btn btn-ghost">Inicio</a>
+          <a href="{{ url_for('clientes') }}" class="btn btn-ghost">Clientes</a>
+          <a href="{{ url_for('turnos') }}" class="btn btn-ghost">Turnos</a>
+          <a href="{{ url_for('notas') }}" class="btn btn-ghost">Notas</a>
+          <a href="{{ url_for('correo') }}" class="btn btn-ghost">Correo</a>
+          <a href="{{ url_for('new_cliente') }}" class="btn btn-indigo">Nuevo</a>
+          <!-- Ajuste: apunta a la vista de menú de exportación -->
+          <a href="{{ url_for('exportar_menu') }}" class="btn btn-emerald">Exportar</a>
+        </div>
+      </div>
+    </nav>
+
+    <main class="container">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="mt-2">
+            {% for category, msg in messages %}
+              <div class="card"
+                   style="padding:.6rem .8rem; margin-bottom:.5rem; {{ 'background:#ecfdf5;color:#065f46' if category == 'success' else 'background:#fee2e2;color:#7f1d1d' }}">
+                {{ msg }}
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+
+      {% block content %}{% endblock %}
+    </main>
+  </body>
+</html>

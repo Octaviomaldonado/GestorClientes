@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}{{ titulo }}{% endblock %}
+{% block content %}
+  <form method="post" class="card" style="padding:1rem">
+    <div class="row">
+      <div>
+        <label class="muted" style="font-size:.9rem">Nombre</label>
+        <input required name="nombre" value="{{ form.nombre or '' }}">
+      </div>
+      <div>
+        <label class="muted" style="font-size:.9rem">Apellido</label>
+        <input required name="apellido" value="{{ form.apellido or '' }}">
+      </div>
+      <div>
+        <label class="muted" style="font-size:.9rem">Teléfono</label>
+        <input required name="telefono" value="{{ form.telefono or '' }}" placeholder="+1 415 555 0100">
+      </div>
+      <div>
+        <label class="muted" style="font-size:.9rem">Email</label>
+        <input required name="email" type="email" value="{{ form.email or '' }}">
+      </div>
+      <div>
+        <label class="muted" style="font-size:.9rem">Región</label>
+        <select name="region">
+          <option value="US" {% if form.region=='US' %}selected{% endif %}>US</option>
+          <option value="AR" {% if form.region=='AR' %}selected{% endif %}>AR</option>
+          <option value="MX" {% if form.region=='MX' %}selected{% endif %}>MX</option>
+          <option value="ES" {% if form.region=='ES' %}selected{% endif %}>ES</option>
+        </select>
+      </div>
+      <div class="flex items-center" style="gap:.5rem">
+        <input type="checkbox" name="activo" value="1" {% if form.activo %}checked{% endif %}>
+        <span class="muted" style="font-size:.9rem">Activo</span>
+      </div>
+      <div style="grid-column:1 / -1">
+        <label class="muted" style="font-size:.9rem">Notas</label>
+        <textarea name="notas" rows="3">{{ form.notas or '' }}</textarea>
+      </div>
+      <div style="grid-column:1 / -1" class="flex" style="gap:.5rem">
+        <button class="btn btn-indigo" type="submit">Guardar</button>
+        <a class="btn" href="{{ url_for('clientes') }}">Cancelar</a>
+      </div>
+    </div>
+  </form>
+{% endblock %}

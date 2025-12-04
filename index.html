@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% block title %}Clientes{% endblock %}
+{% block content %}
+
+{# ——— Header ——— #}
+<div class="page-header">
+  <div>
+    <h1>Clientes</h1>
+    <div class="subtitle">Listado, búsqueda y acciones rápidas.</div>
+  </div>
+</div>
+
+{# ——— Filtros ——— #}
+<div class="card-lg" style="margin-bottom:1rem">
+  <form method="get" class="form-grid" style="align-items:end">
+    <div class="field">
+      <label for="q">Búsqueda</label>
+      <input id="q" type="text" name="q" value="{{ request.args.get('q','') }}" placeholder="Nombre, apellido, email o teléfono">
+      <div class="helper">Enter para buscar • <a href="{{ url_for('clientes') }}">Limpiar</a></div>
+    </div>
+    <div class="field">
+      <label>Estado</label>
+      <label class="flex items-center" style="gap:.5rem">
+        <input type="checkbox" name="solo_activos" value="1" {% if request.args.get('solo_activos') %}checked{% endif %} aria-label="Solo activos">
+        <span>Solo activos</span>
+      </label>
+    </div>
+    <div>
+      <button class="btn btn-dark" type="submit">Buscar</button>
+    </div>
+  </form>
+</div>
+
+{# ——— KPIs rápidos (calculados en el template) ——— #}
+{% set total = clientes|length %}
+{% set activos = clientes|selectattr('activo')|list|length %}
+{% set inactivos = total - activos %}
+<div class="kpis" style="margin-bottom:1rem">
+  <div class="kpi"><div class="lbl">Total</div><div class="n">{{ total }}</div></div>
+  <div class="kpi"><div class="lbl">Activos</div><div class="n">{{ activos }}</div></div>
+  <div class="kpi"><div class="lbl">Inactivos</div><div class="n">{{ inactivos }}</div></div>
+  <div class="kpi"><div class="lbl">Filtrados</div><div class="n">{{ total }}</div></div>
+</div>
+
+{# ——— Tabla ——— #}
+<div class="card" style="overflow:auto">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Apellido</th>
+        <th>Nombre</th>
+        <th>Teléfono</th>
+        <th>Email</th>
+        <th>Estado</th>
+        <th style="width:380px">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in clientes %}
+      <tr class="fade-in">
+        <td>{{ c.id }}</td>
+        <td>{{ c.apellido }}</td>
+        <td>{{ c.nombre }}</td>
+        <td>{{ c.telefono }}</td>
+        <td>{{ c.email }}</td>
+        <td>
+          {% if c.activo %}
+            <span class="badge ok">Activo</span>
+          {% else %}
+            <span class="badge">Inactivo</span>
+          {% endif %}
+        </td>
+        <td>
+          <div class="actions-row">
+            <a href="{{ url_for('edit_cliente', cliente_id=c.id) }}" class="btn btn-indigo">Editar</a>
+            <a href="{{ url_for('correo', cliente_id=c.id) }}" class="btn btn-ghost">Correo</a>
+
+            <form action="{{ url_for('toggle_cliente', cliente_id=c.id) }}" method="post" style="display:inline">
+              <button class="btn btn-amber" type="submit">{{ 'Desactivar' if c.activo else 'Activar' }}</button>
+            </form>
+
+            <form action="{{ url_for('delete_cliente', cliente_id=c.id) }}" method="post"
+                  onsubmit="return confirm('¿Eliminar cliente definitivamente?')" style="display:inline">
+              <button class="btn btn-red" type="submit">Eliminar</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="7" class="muted" style="text-align:center;padding:2rem 1rem">
+          No hay resultados. Probá limpiar la búsqueda.
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

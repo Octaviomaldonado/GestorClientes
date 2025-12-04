@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}Ajustes{% endblock %}
+{% block content %}
+  <form method="post" class="card" style="padding:1rem">
+    <div class="row">
+      <div>
+        <label class="muted" style="font-size:.9rem">SMTP_HOST</label>
+        <input name="SMTP_HOST" value="{{ cfg.host }}">
+      </div>
+      <div>
+        <label class="muted" style="font-size:.9rem">SMTP_PORT</label>
+        <input name="SMTP_PORT" value="{{ cfg.port }}">
+      </div>
+      <div>
+        <label class="muted" style="font-size:.9rem">SMTP_USER</label>
+        <input name="SMTP_USER" value="{{ cfg.user }}">
+      </div>
+      <div>
+        <label class="muted" style="font-size:.9rem">SMTP_PASS</label>
+        <input name="SMTP_PASS" type="password" value="{{ cfg.password }}">
+      </div>
+      <div style="grid-column:1 / -1">
+        <label class="muted" style="font-size:.9rem">SMTP_FROM</label>
+        <input name="SMTP_FROM" value="{{ cfg.from }}">
+      </div>
+      <div style="grid-column:1 / -1">
+        <button class="btn btn-indigo" type="submit">Guardar</button>
+        <a class="btn" href="{{ url_for('correo') }}">Ir a Correo</a>
+      </div>
+    </div>
+    <p class="muted mt-2" style="font-size:.85rem">
+      Para Gmail: host <b>smtp.gmail.com</b>, puerto <b>587</b> y una <b>Contraseña de aplicación</b>.
+    </p>
+  </form>
+{% endblock %}

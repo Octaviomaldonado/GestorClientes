@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% block title %}Inicio{% endblock %}
+{% block content %}
+
+  <!-- HERO -->
+  <section class="hero fade-in">
+    <div style="display:flex; align-items:start; justify-content:space-between; gap:1rem; flex-wrap:wrap">
+      <div>
+        <h1 class="h1">Bienvenido 👋</h1>
+        <p class="subtle">Gestioná tus clientes, notas y correos desde un solo lugar.</p>
+        <div class="mt-2">
+          <a class="btn btn-dark" href="{{ url_for('clientes') }}">Ir a Clientes</a>
+          <a class="btn" href="{{ url_for('new_cliente') }}">Nuevo cliente</a>
+        </div>
+      </div>
+      <div>
+        {% if stats.smtp_ok %}
+          <span class="badge-chip">Correo listo ✓</span>
+        {% else %}
+          <a class="badge-chip" href="{{ url_for('ajustes') }}">Configurar correo →</a>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+
+  <!-- GRID -->
+  <section class="grid mt-4">
+
+    <!-- KPIs -->
+    <div class="card-lg fade-in" style="grid-column:1 / -1">
+      <div class="kpis">
+        <div class="kpi">
+          <div class="n">{{ stats.total }}</div>
+          <div class="lbl">Clientes totales</div>
+        </div>
+        <div class="kpi">
+          <div class="n">{{ stats.activos }}</div>
+          <div class="lbl">Activos</div>
+        </div>
+        <div class="kpi">
+          <div class="n">{{ stats.inactivos }}</div>
+          <div class="lbl">Inactivos</div>
+        </div>
+        <div class="kpi">
+          <div class="n">{{ stats.notas }}</div>
+          <div class="lbl">Notas</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Acciones rápidas -->
+    <div class="card-lg fade-in" style="grid-column:1 / -1">
+      <h3 style="margin:.2rem 0 1rem 0">Acciones rápidas</h3>
+      <div class="actions">
+        <a class="action" href="{{ url_for('new_cliente') }}">
+          <span class="pill">Alta</span>
+          <h4>Nuevo cliente</h4>
+          <p class="subtle">Cargá un cliente con validación de email y teléfono.</p>
+        </a>
+        <a class="action" href="{{ url_for('correo') }}">
+          <span class="pill">Email</span>
+          <h4>Enviar correo</h4>
+          <p class="subtle">Contactá a un cliente o a un segmento.</p>
+        </a>
+        <a class="action" href="{{ url_for('notas') }}">
+          <span class="pill">Notas</span>
+          <h4>Registrar seguimiento</h4>
+          <p class="subtle">Dejá un registro de llamadas o reuniones.</p>
+        </a>
+        <a class="action" href="{{ url_for('exportar') }}">
+          <span class="pill">Excel</span>
+          <h4>Exportar clientes</h4>
+          <p class="subtle">Descargá el listado en formato XLSX.</p>
+        </a>
+      </div>
+    </div>
+
+    <!-- Últimas notas -->
+    <div class="card-lg fade-in" style="grid-column:1 / -1">
+      <div style="display:flex; align-items:center; justify-content:space-between">
+        <h3 style="margin:.2rem 0 1rem 0">Últimas notas</h3>
+        <a class="btn" href="{{ url_for('notas') }}">Ver todas</a>
+      </div>
+      <ul class="list">
+        {% for n in recientes %}
+          <li>
+            <div style="font-weight:600">{{ n.apellido }}, {{ n.nombre }}</div>
+            <div class="subtle" style="font-size:.9rem">{{ n.created_at }} — {{ n.contenido }}</div>
+          </li>
+        {% else %}
+          <li class="subtle">No hay notas aún.</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+  </section>
+{% endblock %}

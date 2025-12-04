@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block title %}Correo{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <h1>Enviar correo</h1>
+    <div class="subtitle">Elegí un cliente o escribí un email manualmente. El mensaje se envía usando tu configuración SMTP.</div>
+  </div>
+  <div class="actions-row">
+    <a class="btn btn-outline" href="{{ url_for('ajustes') }}">Ajustes SMTP</a>
+  </div>
+</div>
+
+<div class="card-lg">
+  {% if not smtp_ok %}
+    <div class="alert alert-error mb-4">
+      Falta configurar SMTP. Completá <a href="{{ url_for('ajustes') }}" class="btn btn-ghost" style="margin-left:.5rem">Ajustes</a>
+    </div>
+  {% else %}
+  {% endif %}
+
+  <form method="post" class="form-grid">
+    <div class="field">
+      <label>Elegir cliente (opcional)</label>
+      <select onchange="document.getElementById('email').value=this.options[this.selectedIndex].dataset.email || ''">
+        <option value="">— Seleccionar… —</option>
+        {% for c in clientes %}
+          <option data-email="{{ c.email }}">{{ c.apellido }}, {{ c.nombre }} — {{ c.email }}</option>
+        {% endfor %}
+      </select>
+      <div class="helper">Si elegís un cliente, autocompletamos su email.</div>
+    </div>
+
+    <div class="field">
+      <label>Email destino</label>
+      <input id="email" name="email" type="email" value="{{ pref_email or '' }}" required>
+      <div class="helper">Podés editarlo libremente.</div>
+    </div>
+
+    <div class="field" style="grid-column:1 / -1">
+      <label>Asunto</label>
+      <input name="asunto" required>
+    </div>
+
+    <div class="field" style="grid-column:1 / -1">
+      <label>Mensaje</label>
+      <textarea name="cuerpo" rows="8" required></textarea>
+      <div class="helper">Consejo: mantené el mensaje claro y breve.</div>
+    </div>
+
+    <div style="grid-column:1 / -1; display:flex; gap:.5rem; align-items:center">
+      <button class="btn btn-emerald" type="submit">Enviar</button>
+    </div>
+  </form>
+</div>
+
+<script>
+  // (Opcional) Enviar con Ctrl+Enter
+  (function(){
+    const form = document.querySelector('form');
+    const body = form.querySelector('textarea[name="cuerpo"]');
+    form.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        form.submit();
+      }
+    });
+  })();
+</script>
+
+{% endblock %}
